@@ -63,6 +63,40 @@ class UserController extends Controller {
       }
     }
   }
+  // 登录
+  async login() {
+    try {
+      const { ctx, app } = this;
+      // 获取登录时的 username, password
+      const { username, password } = ctx.request.body;
+      // 根据用户名，在数据库查找相对应的id操作
+      const userInfo = await ctx.service.user.getUserByName(username);
+      // 1、没找到说明没有该用户
+      if (!userInfo || !userInfo.id) {
+        ctx.body = {
+          status: 500,
+          desc: '账号不存在',
+          data: null
+        }
+        return
+      }
+      // 2、找到用户，并且判断输入密码与数据库中用户密码
+      if (userInfo && password != userInfo.password) {
+        ctx.body = {
+          status: 500,
+          desc: '账号密码错误',
+          data: null
+        }
+        return
+      }
+    } catch (error) {
+      ctx.body = {
+        status: 500,
+        desc: '登录失败',
+        data: null
+      }
+    }
+  }
 }
 
 module.exports = UserController;

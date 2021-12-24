@@ -23,10 +23,17 @@ module.exports = appInfo => {
     // myAppName: 'egg',
   };
 
+  // jwt 配置
+  config.jwt = {
+    secret: 'kaimo313', // 自定义加密字符串，secret 是在服务端的，不要泄露
+  };
+
+  // 视图配置
   config.view = {
     mapping: {'.html': 'ejs'}  // 左边写成.html后缀，会自动渲染.html文件
   };
 
+  // 安全配置
   config.security = {
     csrf: {
       enable: false,
@@ -35,6 +42,7 @@ module.exports = appInfo => {
     domainWhiteList: [ '*' ], // 配置白名单
   };
 
+  // 数据库配置
   config.mysql = {
     // 单数据库信息配置
     client: {
