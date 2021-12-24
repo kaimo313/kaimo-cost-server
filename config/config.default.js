@@ -47,7 +47,7 @@ module.exports = appInfo => {
       // 密码
       password: 'kaimo313', // 初始化密码，没设置的可以不写
       // 数据库名
-      database: 'test', // 新建的数据库名称
+      database: 'kaimo-cost', // 新建的数据库名称
     },
     // 是否加载到 app 上，默认开启
     app: true,
