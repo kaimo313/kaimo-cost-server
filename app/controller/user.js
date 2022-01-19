@@ -89,6 +89,18 @@ class UserController extends Controller {
         }
         return
       }
+      // 3、生成 token 
+      const token = app.jwt.sign({
+        id: userInfo.id,
+        username: userInfo.username,
+        exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // token 有效期为 24 小时
+      }, app.config.jwt.secret);
+      // 返回 token
+      ctx.body = {
+        status: 200,
+        desc: '登录成功',
+        data: { token }
+      };
     } catch (error) {
       ctx.body = {
         status: 500,
