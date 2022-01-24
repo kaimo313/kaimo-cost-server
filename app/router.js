@@ -13,4 +13,6 @@ module.exports = app => {
   router.post('/api/user/login', controller.user.login);
   // 测试 token 解析
   router.get('/api/user/token', verify_token, controller.user.getTokenInfo);
+  // 获取用户信息
+  router.get('/api/user/getUserInfo', verify_token, controller.user.getUserInfo);
 };

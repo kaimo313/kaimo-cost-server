@@ -124,6 +124,35 @@ class UserController extends Controller {
       data: { ...decode }
     };
   }
+  // 获取用户信息
+  async getUserInfo() {
+    try {
+      const { ctx, app } = this;
+      // 1. 获取请求头 authorization 属性，值为 token
+      const token = ctx.request.header.authorization;
+      // 2. 用 app.jwt.verify(token， app.config.jwt.secret)，解析出 token 的值
+      const decode = await app.jwt.verify(token, app.config.jwt.secret);
+      // 3、根据用户名，在数据库查找相对应的id操作
+      const userInfo = await ctx.service.user.getUserByName(decode.username);
+      // 返回 token
+      ctx.body = {
+        status: 200,
+        desc: '获取成功',
+        data: {
+          id: userInfo.id,
+          username: userInfo.username,
+          signature: userInfo.signature,
+          avatar: userInfo.avatar,
+        }
+      };
+    } catch (error) {
+      ctx.body = {
+        status: 500,
+        desc: '获取失败',
+        data: null
+      }
+    }
+  }
 }
 
 module.exports = UserController;
