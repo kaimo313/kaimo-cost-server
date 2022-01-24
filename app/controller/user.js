@@ -109,6 +109,21 @@ class UserController extends Controller {
       }
     }
   }
+  // 测试 解析 token
+  async getTokenInfo() {
+    const { ctx, app } = this;
+    // 1. 获取请求头 authorization 属性，值为 token
+    const token = ctx.request.header.authorization;
+    // 2. 用 app.jwt.verify(token， app.config.jwt.secret)，解析出 token 的值
+    const decode = await app.jwt.verify(token, app.config.jwt.secret);
+    console.log('测试 解析 token', decode);
+    // 返回 token
+    ctx.body = {
+      status: 200,
+      desc: '获取成功',
+      data: { ...decode }
+    };
+  }
 }
 
 module.exports = UserController;
