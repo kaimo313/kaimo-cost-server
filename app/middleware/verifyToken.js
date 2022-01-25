@@ -17,6 +17,7 @@ module.exports = (secret) => {
           status: 401,
           desc: 'token已过期，请重新登录'
         }
+        return null;
       }
     } else {
       // token 不存在
@@ -25,6 +26,7 @@ module.exports = (secret) => {
         status: 401,
         desc: 'token不存在'
       };
+      return null;
     }
   }
 };

@@ -15,4 +15,6 @@ module.exports = app => {
   router.get('/api/user/token', verify_token, controller.user.getTokenInfo);
   // 获取用户信息
   router.get('/api/user/getUserInfo', verify_token, controller.user.getUserInfo);
+  // 修改用户信息
+  router.post('/api/user/updateUserInfo', verify_token, controller.user.updateUserInfo);
 };
