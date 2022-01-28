@@ -1,13 +1,10 @@
 'use strict';
 
 const Controller = require('egg').Controller;
-// 默认头像
-const defaultAvatar = 'https://profile.csdnimg.cn/A/C/5/1_kaimo313';
-
 class UserController extends Controller {
   async register() {
+    const { ctx } = this;
     try {
-      const { ctx } = this;
       // 获取注册时的 username, password
       const { username, password } = ctx.request.body;
       console.log('注册获取参数', username, password)
@@ -37,8 +34,8 @@ class UserController extends Controller {
       const result = await ctx.service.user.register({
         username,
         password,
-        signature: '这个人很懒，没什么留言',
-        avatar: defaultAvatar,
+        signature: '',
+        avatar: '',
         ctime: new Date()
       });
       console.log('数据存入数据库--->', result);
@@ -65,8 +62,8 @@ class UserController extends Controller {
   }
   // 登录
   async login() {
+    const { ctx, app } = this;
     try {
-      const { ctx, app } = this;
       // 获取登录时的 username, password
       const { username, password } = ctx.request.body;
       // 根据用户名，在数据库查找相对应的id操作
@@ -126,13 +123,14 @@ class UserController extends Controller {
   }
   // 获取用户信息
   async getUserInfo() {
+    const { ctx, app } = this;
     try {
-      const { ctx, app } = this;
       // 1. 获取请求头 authorization 属性，值为 token
       const token = ctx.request.header.authorization;
-      // 2. 用 app.jwt.verify(token， app.config.jwt.secret)，解析出 token 的值
+      // // 2. 用 app.jwt.verify(token， app.config.jwt.secret)，解析出 token 的值
       const decode = await app.jwt.verify(token, app.config.jwt.secret);
       // 3、根据用户名，在数据库查找相对应的id操作
+      console.log('获取用户信息', decode);
       const userInfo = await ctx.service.user.getUserByName(decode.username);
       // 返回 token
       ctx.body = {
@@ -155,10 +153,10 @@ class UserController extends Controller {
   }
   // 更新用户信息
   async updateUserInfo() {
+    const { ctx, app } = this;
     try {
-      const { ctx, app } = this;
-      // 0、获取用户输入的 signature
-      const { signature } = ctx.request.body;
+      // 0、获取用户输入的 signature， avatar
+      const { signature = '', avatar = '' } = ctx.request.body;
       // 1、获取请求头 authorization 属性，值为 token
       const token = ctx.request.header.authorization;
       // 2、用 app.jwt.verify(token， app.config.jwt.secret)，解析出 token 的值
@@ -167,10 +165,13 @@ class UserController extends Controller {
       if(!decode) return;
       // 4、根据用户名，在数据库查找相对应的id操作
       const userInfo = await ctx.service.user.getUserByName(decode.username);
-      // 5、通过 service 方法 updateUserInfo 修改 signature 信息
+      // 5、通过 service 方法 updateUserInfo 修改 signature，avatar... 信息
       const result = await ctx.service.user.updateUserInfo({
-        ...userInfo, signature
+        ...userInfo, 
+        signature: signature || userInfo.signature,
+        avatar: avatar || userInfo.avatar
       });
+      console.log('userjs更新用户信息', signature, avatar);
       // 返回 token
       ctx.body = {
         status: 200,
@@ -178,7 +179,8 @@ class UserController extends Controller {
         data: {
           id: userInfo.id,
           username: userInfo.username,
-          signature
+          signature: signature || userInfo.signature,
+          avatar: avatar || userInfo.avatar
         }
       };
     } catch (error) {

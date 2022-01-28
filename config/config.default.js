@@ -21,6 +21,11 @@ module.exports = appInfo => {
   // add your user config here
   const userConfig = {
     // myAppName: 'egg',
+    uploadAvatarDir: 'D://kaimo-cost-images/images/avatar', // 上传头像路径
+  };
+  // 文件读取配置
+  config.multipart = {
+    mode: 'file'
   };
 
   // jwt 配置
