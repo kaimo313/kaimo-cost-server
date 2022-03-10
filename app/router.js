@@ -21,4 +21,8 @@ module.exports = app => {
   router.post('/api/upload/avatar', verify_token, controller.upload.uploadAvatar);
   // 获取头像
   router.get('/api/upload/getAvatar', verify_token, controller.upload.getAvatar);
+  // 添加账单
+  router.post('/api/bill/add', verify_token, controller.bill.add);
+  // 获取账单列表
+  router.get('/api/bill/list', verify_token, controller.bill.list);
 };
