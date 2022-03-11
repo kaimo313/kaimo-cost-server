@@ -59,5 +59,46 @@ class BillService extends Service {
       return null;
     }
   }
+  // 获取账单详情数据
+  async details(user_id, id) {
+    const { app } = this;
+    try {
+      const result = await app.mysql.get('bill', { id, user_id });
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+  // 获取账单详情数据
+  async update(params) {
+    const { app } = this;
+    try {
+      const result = await app.mysql.update('bill', { ...params }, {
+        where: {
+          id: params.id,
+          user_id: params.user_id
+        }
+      });
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+  // 删除账单
+  async delete(user_id, id) {
+    const { app } = this;
+    try {
+      const result = await app.mysql.delete('bill', {
+        id,
+        user_id,
+      });
+      return result;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 }
 module.exports = BillService;

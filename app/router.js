@@ -25,4 +25,12 @@ module.exports = app => {
   router.post('/api/bill/add', verify_token, controller.bill.add);
   // 获取账单列表
   router.get('/api/bill/list', verify_token, controller.bill.list);
+  // 获取账单详情
+  router.get('/api/bill/details', verify_token, controller.bill.details);
+  // 更新账单信息
+  router.post('/api/bill/update', verify_token, controller.bill.update);
+  // 删除账单
+  router.post('/api/bill/delete', verify_token, controller.bill.delete);
+  // 获取月度统计账单
+  router.get('/api/analysis/monthBill', verify_token, controller.analysis.monthBill);
 };

@@ -16,6 +16,7 @@ class BillController extends Controller {
         desc: '参数错误',
         data: null
       }
+      return;
     }
 
     try {
@@ -138,6 +139,130 @@ class BillController extends Controller {
       ctx.body = {
         status: 500,
         desc: '系统错误',
+        data: null
+      }
+    }
+  }
+  // 获取账单详情
+  async details () {
+    const { ctx, app } = this;
+    try {
+      // 1、获取参数
+      const { id = "" } = ctx.query;
+      // 2、判空处理
+      if (!id) {
+        ctx.body = {
+          status: 400,
+          desc: '详情id不能为空',
+          data: null
+        }
+        return;
+      }
+      console.log('1、获取查询参数id',id);
+      // 3、拿到 token 获取用户信息 user_id
+      const token = ctx.request.header.authorization;
+      const decode = await app.jwt.verify(token, app.config.jwt.secret);
+      if (!decode) return;
+      let user_id = decode.id;
+      console.log('2、拿到 token 获取用户信息 user_id',user_id);
+      // 4、通过 user_id id 获取账单详情数据
+      const detailsData = await ctx.service.bill.details(user_id, id);
+      console.log('3、通过 user_id id 获取账单详情数据', detailsData);
+      ctx.body = {
+        status: 200,
+        desc: '请求成功',
+        data: detailsData
+      }
+    } catch(error) {
+      console.log(error);
+      ctx.body = {
+        status: 500,
+        desc: '系统异常',
+        data: null
+      }
+    }
+  }
+  // 获取账单详情
+  async update () {
+    const { ctx, app } = this;
+    // 1、获取请求中携带的参数
+    const { id, amount, type_id, type_name, date, pay_type, remark = '' } = ctx.request.body;
+    // 2、判空处理
+    if (!id || !amount || !type_id || !type_name || !date || !pay_type) {
+      ctx.body = {
+        status: 400,
+        desc: '参数错误',
+        data: null
+      }
+      return;
+    }
+    console.log('1、获取请求中携带的参数', {id, amount, type_id, type_name, date, pay_type, remark});
+    try {
+      // 3、拿到 token 获取用户信息
+      const token = ctx.request.header.authorization;
+      const decode = await app.jwt.verify(token, app.config.jwt.secret);
+      if (!decode) return;
+      let user_id = decode.id;
+      // 4、更新数据
+      const result = await ctx.service.bill.update({
+        id, // 账单 id
+        amount, // 金额
+        type_id, // 消费类型 id
+        type_name, // 消费类型名称
+        date, // 日期
+        pay_type, // 消费类型
+        remark, // 备注
+        user_id // 用户 id
+      });
+      console.log('4、更新数据', result);
+      ctx.body = {
+        status: 200,
+        desc: '更新成功',
+        data: null
+      }
+    } catch (error) {
+      ctx.body = {
+        status: 500,
+        desc: '系统错误',
+        data: null
+      }
+    }
+  }
+  // 删除账单
+  async delete () {
+    const { ctx, app } = this;
+    try {
+      // 1、获取参数
+      const { id = "" } = ctx.request.body;
+      // 2、判空处理
+      if (!id) {
+        ctx.body = {
+          status: 400,
+          desc: '详情id不能为空',
+          data: null
+        }
+        return;
+      }
+      console.log('1、获取查询参数id',id);
+      // 3、拿到 token 获取用户信息 user_id
+      const token = ctx.request.header.authorization;
+      const decode = await app.jwt.verify(token, app.config.jwt.secret);
+      if (!decode) return;
+      let user_id = decode.id;
+      console.log('2、拿到 token 获取用户信息 user_id',user_id);
+      // 4、通过 user_id id 删除账单数据
+      const deleteData = await ctx.service.bill.delete(user_id, id);
+      console.log('3、通过 user_id id 删除账单数据', deleteData);
+      ctx.body = {
+        status: 200,
+        desc: '删除成功',
+        data: null
+      }
+    } catch(error) {
+      console.log(error);
+      ctx.body = {
+        status: 500,
+        desc: '系统异常',
         data: null
       }
     }
