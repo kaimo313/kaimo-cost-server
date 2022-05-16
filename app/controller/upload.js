@@ -23,7 +23,7 @@ class UploadController extends Controller {
       let dir = path.join(config.uploadAvatarDir, day);
       console.log('2、创建图片保存的路径', dir);
       // 3、创建目录
-      await mkdirp(dir);
+      await mkdirp.sync(dir);
       // 4、生成路径返回
       let temp_uuid = uuidv1(); // uuid
       let file_name = day + "_" + temp_uuid + path.extname(file.filename); // 图片文件名称
@@ -51,7 +51,7 @@ class UploadController extends Controller {
     const { ctx, config } = this;
     try {
       // 0、获取图片名称
-      let picname = ctx.request.body.picname;
+      let picname = ctx.query.picname;
       console.log('0、获取图片名称', picname);
       // 1、判断
       if(!picname) {
