@@ -40,5 +40,20 @@ class UserService extends Service {
       return null;
     }
   }
+  // 重置密码
+  async resetPassword(params) {
+    const { app } = this;
+    try {
+      // 通过 app.mysql.update 方法更新 user 表, 通过 id 筛选用户
+      const result = await app.mysql.update('user', 
+        { ...params }, 
+        { id: params.id }
+      );
+      return result;
+    } catch(error) {
+      console.log(error);
+      return null;
+    }
+  }
 }
 module.exports = UserService;

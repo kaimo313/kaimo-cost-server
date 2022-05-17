@@ -17,6 +17,8 @@ module.exports = app => {
   router.get('/api/user/getUserInfo', verify_token, controller.user.getUserInfo);
   // 修改用户信息
   router.post('/api/user/updateUserInfo', verify_token, controller.user.updateUserInfo);
+  // 重置用户密码
+  router.post('/api/user/resetPassword', verify_token, controller.user.resetPassword);
   // 上传头像
   router.post('/api/upload/avatar', verify_token, controller.upload.uploadAvatar);
   // 获取头像

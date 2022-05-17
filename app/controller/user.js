@@ -1,6 +1,20 @@
 'use strict';
-
 const Controller = require('egg').Controller;
+const CryptoJS = require("crypto-js");
+
+function DES_decrypt(decryptStr) {
+  return CryptoJS.DES.decrypt(
+    {
+      ciphertext: CryptoJS.enc.Hex.parse(decryptStr)
+    },
+    CryptoJS.enc.Utf8.parse("ABF"),// keyHex
+    { 
+      mode: CryptoJS.mode.ECB, 
+      padding: CryptoJS.pad.Pkcs7
+    } // option
+  ).toString(CryptoJS.enc.Utf8);
+}
+
 class UserController extends Controller {
   async register() {
     const { ctx } = this;
@@ -182,6 +196,52 @@ class UserController extends Controller {
           signature: signature || userInfo.signature,
           avatar: avatar || userInfo.avatar
         }
+      };
+    } catch (error) {
+      ctx.body = {
+        status: 500,
+        desc: '更新失败',
+        data: null
+      }
+    }
+  }
+  // 重置密码
+  async resetPassword() {
+    const { ctx, app } = this;
+    try {
+      // 0、获取用户输入的 oldPassword newPassword
+      const { oldPassword, newPassword } = ctx.request.body;
+      const old_password = DES_decrypt(oldPassword);
+      const new_password = DES_decrypt(newPassword);
+      console.log('解密--old-->', oldPassword, old_password)
+      console.log('解密--new-->', newPassword, new_password)
+      // 1、获取请求头 authorization 属性，值为 token
+      const token = ctx.request.header.authorization;
+      // 2、用 app.jwt.verify(token， app.config.jwt.secret)，解析出 token 的值
+      const decode = await app.jwt.verify(token, app.config.jwt.secret);
+      // 3、校验是否 token 可以，需要在鉴权中间件里加返回
+      if(!decode) return;
+      // 4、根据用户名，在数据库查找相对应的id操作
+      const userInfo = await ctx.service.user.getUserByName(decode.username);
+      // 5、校验是否通过
+      if (old_password !== userInfo.password) {
+        ctx.body = {
+          status: 400,
+          desc: '原密码错误',
+          data: null
+        };
+        return;
+      }
+      // 6、通过 service 方法 resetPassword 修改 password 信息
+      const result = await ctx.service.user.resetPassword({
+        ...userInfo,
+        password: new_password
+      });
+      // 返回 token
+      ctx.body = {
+        status: 200,
+        desc: '更新成功',
+        data: null
       };
     } catch (error) {
       ctx.body = {
